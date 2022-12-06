@@ -1,11 +1,13 @@
 ﻿global using Raylib_cs;
 global using System.Numerics;
 
-Raylib.InitWindow(800, 600, "Världens sämsta spel");
+Raylib.InitWindow(960, 960, "Världens sämsta spel");
 Raylib.SetTargetFPS(60);
 
 Player p = new Player();
 Enemy e = new Enemy();
+
+
 
 while(!Raylib.WindowShouldClose())
 {
@@ -17,8 +19,9 @@ while(!Raylib.WindowShouldClose())
     //GRAFIK
     Raylib.BeginDrawing();
     Raylib.ClearBackground(Color.WHITE);
+    Map.Draw();
     p.Draw();
-    e.Draw();
+    //e.Draw();
 
 
     Raylib.EndDrawing();

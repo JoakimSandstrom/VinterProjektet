@@ -5,13 +5,12 @@ public class Player : Entety
     //BILD
     //MOVEMENT
 
-
     public Player()
     {
         Speed = 5f;
 
         sprite = Raylib.LoadTexture("Sprites/Snowman.png");
-        rect = new Rectangle(0, 0, sprite.width, sprite.height);
+        rect = new Rectangle(480, 480, sprite.width, sprite.height);
     }
     public void Update()
     {
@@ -33,6 +32,12 @@ public class Player : Entety
         //Add Vector2 to Player position
         rect.x += movement.X;
         rect.y += movement.Y;
+
+        if (!Raylib.CheckCollisionRecs(rect, Map.Col))
+        {
+            rect.x -= movement.X;
+            rect.y -= movement.Y;
+        }
     }
 
     public void Draw()

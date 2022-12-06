@@ -4,16 +4,6 @@ public class Enemy: Entety
     //BILD
     //MOVEMENT
 
-    //Stupid variables to calculate movement
-    private float totalX;
-    private float totalY;
-    private bool xIsPos;
-    private bool yIsPos;
-    private float totalDistance;
-    private float xFactor;
-    private float yFactor;
-    private float totalSqrt;
-
     public Enemy()
     {
         Speed = 4f;
@@ -41,9 +31,9 @@ public class Enemy: Entety
         //Add Vector2 to Player position
         rect.x += movement.X;
         rect.y += movement.Y;
-
     }
 
+    //Draw the texture to the screen
     public void Draw()
     {
         Raylib.DrawTexture
