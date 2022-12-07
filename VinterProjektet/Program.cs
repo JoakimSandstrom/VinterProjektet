@@ -6,6 +6,7 @@ Raylib.SetTargetFPS(60);
 
 Player p = new Player();
 Enemy e = new Enemy();
+Animation a = new Animation();
 
 
 
@@ -14,6 +15,7 @@ while(!Raylib.WindowShouldClose())
     //LOGIK
     p.Update();
     e.Update(p);
+    
 
     
     //GRAFIK
@@ -21,6 +23,7 @@ while(!Raylib.WindowShouldClose())
     Raylib.ClearBackground(Color.WHITE);
     Map.Draw();
     p.Draw();
+    a.Draw(p);
     //e.Draw();
 
 

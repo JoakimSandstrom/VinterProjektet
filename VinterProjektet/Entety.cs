@@ -4,13 +4,21 @@ public class Entety
 
     //Raylib variables
     public Rectangle rect;
-    protected Texture2D sprite;
+    public Rectangle source;
     protected Vector2 movement = new();
 
+    //Sprites
+    protected Texture2D sprite;
+    protected int frameSize = 32;
+    protected int frame = 0;
+    protected int frameStart = 0;
+    protected int frameEnd;
+    protected int row = 0;
+    
     //Stats
     public float Speed {get; protected set;}
-    public int Health { get; set; }
-    public int Str { get; set; }
+    public int Health {get; protected set;}
+    public int Str {get; protected set;}
 
 }
 
