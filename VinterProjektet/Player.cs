@@ -13,9 +13,15 @@ public class Player : Entety
     private int[] aRight = {24,25,26,25};
     private int[] aUpStop = {37};
     private int[] aUp = {36,37,38,37};
+    private int[] aDownAttack = {3,4,5};
+    private int[] aLeftAttack = {15,16,17};
+    private int[] aRightAttack = {27,28,29};
+    private int[] aUpAttack = {39,40,41};
 
-    private int animIndex = 0;
-    private bool isMoving = false;
+    //Timer
+    //private float timerMaxValue;
+    //private float timerCurrentValue;
+    private float timer;
     
     public Player()
     {
@@ -23,18 +29,34 @@ public class Player : Entety
         Speed = 5f;
         animSpeed = 0.12f;
 
+        
+
         //Load player Animations
-        animations.Add(new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aDownStop, 12, animSpeed));
-        animations.Add(new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aDown, 12, animSpeed));
-        animations.Add(new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aLeftStop, 12, animSpeed));
-        animations.Add(new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aLeft, 12, animSpeed));
-        animations.Add(new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aRightStop, 12, animSpeed));
-        animations.Add(new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aRight, 12, animSpeed));
-        animations.Add(new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aUpStop, 12, animSpeed));
-        animations.Add(new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aUp, 12, animSpeed));
+        animations.Add("aDownStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aDownStop, 12, animSpeed, false));
+        animations.Add("aDown", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aDown, 12, animSpeed, false));
+        animations.Add("aLeftStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aLeftStop, 12, animSpeed, false));
+        animations.Add("aLeft", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aLeft, 12, animSpeed, false));
+        animations.Add("aRightStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aRightStop, 12, animSpeed, false));
+        animations.Add("aRight", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aRight, 12, animSpeed, false));
+        animations.Add("aUpStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aUpStop, 12, animSpeed, false));
+        animations.Add("aUp", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aUp, 12, animSpeed, false));
+        animations.Add("aDownAttack", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aDownAttack, 12, animSpeed, false));
+        animations.Add("aLeftAttack", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aLeftAttack, 12, animSpeed, false));
+        animations.Add("aRightAttack", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aRightAttack, 12, animSpeed, false));
+        animations.Add("aUpAttack", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aUpAttack, 12, animSpeed, false));
+
+        //Set Next Animation
+        animations["aDown"].next = animations["aDownStop"];
+        animations["aLeft"].next = animations["aLeftStop"];
+        animations["aRight"].next = animations["aRightStop"];
+        animations["aUp"].next = animations["aUpStop"];
+        animations["aDownAttack"].next = animations["aDownStop"];
+        animations["aLeftAttack"].next = animations["aLeftStop"];
+        animations["aRightAttack"].next = animations["aRightStop"];
+        animations["aUpAttack"].next = animations["aUpStop"];
 
         //Set Starting Animation
-        currentAnimation = animations[animIndex];
+        currentAnimation = animations["aDownStop"];
 
         //Set player rectangle to keep track of position and collision
         rect = new Rectangle(480, 480, 32*3, 32*3);
@@ -43,14 +65,20 @@ public class Player : Entety
     //Every frame
     public void Update()
     {
+        if (timer > 0) {timer -= Raylib.GetFrameTime(); return;}
         //Reset Vector2
         movement = Vector2.Zero;
 
         //Controlls
-        if (Raylib.IsKeyDown(KeyboardKey.KEY_S) || Raylib.IsKeyDown(KeyboardKey.KEY_DOWN)) {movement.Y = 1; animIndex = 1; isMoving = true;}
-        if (Raylib.IsKeyDown(KeyboardKey.KEY_A) || Raylib.IsKeyDown(KeyboardKey.KEY_LEFT)) {movement.X = -1; animIndex = 3; isMoving = true;}
-        if (Raylib.IsKeyDown(KeyboardKey.KEY_D) || Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT)) {movement.X = 1; animIndex = 5; isMoving = true;}
-        if (Raylib.IsKeyDown(KeyboardKey.KEY_W) || Raylib.IsKeyDown(KeyboardKey.KEY_UP)) {movement.Y = -1; animIndex = 7; isMoving = true;}
+        if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT))
+        {
+            Attack();
+            return;
+        }
+        if (Raylib.IsKeyDown(KeyboardKey.KEY_S) || Raylib.IsKeyDown(KeyboardKey.KEY_DOWN)) {movement.Y = 1; animIndex = "aDown"; isMoving = true;}
+        if (Raylib.IsKeyDown(KeyboardKey.KEY_A) || Raylib.IsKeyDown(KeyboardKey.KEY_LEFT)) {movement.X = -1; animIndex = "aLeft"; isMoving = true;}
+        if (Raylib.IsKeyDown(KeyboardKey.KEY_D) || Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT)) {movement.X = 1; animIndex = "aRight"; isMoving = true;}
+        if (Raylib.IsKeyDown(KeyboardKey.KEY_W) || Raylib.IsKeyDown(KeyboardKey.KEY_UP)) {movement.Y = -1; animIndex = "aUp"; isMoving = true;}
 
         //Normalize Vector2 if not 0. 0 breaks the code.
         if (movement.Length() > 0)
@@ -67,13 +95,23 @@ public class Player : Entety
         
         //Change animation state
         if (isMoving) currentAnimation = animations[animIndex];
-        else if (!isMoving && animIndex % 2 != 0) {animIndex--; currentAnimation = animations[animIndex];}
+        else if (!isMoving && (animIndex == "aDown" || animIndex == "aLeft" || animIndex == "aRight" || animIndex == "aUp")) 
+            {currentAnimation = currentAnimation.next;}
         isMoving = false;
+    }
+
+    public void Attack()
+    {
+        if (animIndex.Contains("Stop")) animIndex = animIndex.Substring(0,animIndex.LastIndexOf("Stop"));
+        currentAnimation = animations[animIndex+"Attack"];
+        timer = animSpeed*3;
     }
 
     //Draw to screen
     public void Draw()
     {
+        //Raylib.DrawRectangleRec(rect, Color.DARKBLUE);
         currentAnimation.Draw(this);
+        
     }
 }

@@ -14,9 +14,6 @@ public class Enemy: Entety
     private int[] aUpStop = {37};
     private int[] aUp = {36,37,38,37};
 
-    private int animIndex = 0;
-    private bool isMoving = false;
-
     public Enemy()
     {
         //Set Enemy and Animation Speed
@@ -24,20 +21,20 @@ public class Enemy: Entety
         animSpeed = 0.12f;
 
         //Load player Animations
-        animations.Add(new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aDownStop, 12, animSpeed));
-        animations.Add(new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aDown, 12, animSpeed));
-        animations.Add(new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aLeftStop, 12, animSpeed));
-        animations.Add(new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aLeft, 12, animSpeed));
-        animations.Add(new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aRightStop, 12, animSpeed));
-        animations.Add(new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aRight, 12, animSpeed));
-        animations.Add(new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aUpStop, 12, animSpeed));
-        animations.Add(new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aUp, 12, animSpeed));
+        animations.Add("aDownStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aDownStop, 12, animSpeed, true));
+        animations.Add("aDown", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aDown, 12, animSpeed, true));
+        animations.Add("aLeftStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aLeftStop, 12, animSpeed, true));
+        animations.Add("aLeft", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aLeft, 12, animSpeed, true));
+        animations.Add("aRightStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aRightStop, 12, animSpeed, true));
+        animations.Add("aRight", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aRight, 12, animSpeed, true));
+        animations.Add("aUpStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aUpStop, 12, animSpeed, true));
+        animations.Add("aUp", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aUp, 12, animSpeed, true));
 
         //Set Starting Animation
         currentAnimation = animations[animIndex];
 
         //Set Enemy rectangle to keep track of position and collision
-        rect = new Rectangle(300, 300, 32*3, 32*3);
+        rect = new Rectangle(300, 300, 48, 48);
     }
     
     //This controlls the AI
@@ -47,8 +44,10 @@ public class Enemy: Entety
         movement = Vector2.Zero;
 
         //Get the relative position of the player
-        movement.X = p.rect.x - rect.x;
-        movement.Y = p.rect.y - rect.y;
+        movement.X = (p.rect.x + 24) - rect.x;
+        movement.Y = (p.rect.y + 24) - rect.y;
+
+        if ((((p.rect.x + 24) - rect.x) <= 6 && ((p.rect.x + 24) - rect.x) >= -6 ) && ((p.rect.y + 24) - rect.y) <= 6 && ((p.rect.y + 24) - rect.y) >= -6) return;
 
         //Normalize Vector2 if not 0. 0 breaks the code.
         if (movement.Length() > 0)
@@ -64,6 +63,7 @@ public class Enemy: Entety
     //Draw to screen
     public void Draw()
     {
+        //Raylib.DrawRectangleRec(rect, Color.DARKGREEN);
         currentAnimation.Draw(this);
     }
 }

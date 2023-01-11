@@ -15,9 +15,13 @@ public class Entety
     public int Health {get; protected set;}
     public int Str {get; protected set;}
 
-    protected List<Animation> animations = new List<Animation>();
-
+    // protected List<Animation> animations = new List<Animation>()
+    protected Dictionary<string, Animation> animations = new();
+    
     protected Animation currentAnimation;
+
+    protected string animIndex = "aDownStop";
+    protected bool isMoving = false;
 
 }
 

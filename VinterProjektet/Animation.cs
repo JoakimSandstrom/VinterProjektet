@@ -6,11 +6,14 @@ public class Animation
     private List<int> frame;
     private int frameSize;
     private int columnWidth;
+    private int border = 0;
 
     //Set Variables
     private Rectangle source;
     private int frameIndex = 0;
     private int row = 0;
+
+    public Animation next;
 
     //Timer
     private float timerMaxValue;
@@ -18,7 +21,7 @@ public class Animation
 
     private Dictionary<string, Texture2D> spriteSheets = new();
 
-    public Animation(string spriteSheetFile, int frameSize, int[] frame, int columnWidth, float timerMaxValue)
+    public Animation(string spriteSheetFile, int frameSize, int[] frame, int columnWidth, float timerMaxValue, bool border)
     {
         if (!spriteSheets.ContainsKey(spriteSheetFile))
         {
@@ -30,8 +33,12 @@ public class Animation
         this.columnWidth = columnWidth;
         this.frame = new List<int>(frame);
 
+        if (border) this.border = frameSize / 3;
+
         this.timerMaxValue = timerMaxValue;
         timerCurrentValue = timerMaxValue;
+
+        next = this;
     }
 
     //Draw the current frame of the animation
@@ -39,7 +46,8 @@ public class Animation
     {
         if(frame[frameIndex] != 0) row = frame[frameIndex] / columnWidth;
         else row = 0;
-        source = new Rectangle((frame[frameIndex] % 12) * frameSize, row * frameSize, frameSize, frameSize);
+
+        source = new Rectangle(((frame[frameIndex] % 12) * frameSize) + border, (row * frameSize) + border, frameSize - (border * 2), frameSize - (border*2));
 
         Raylib.DrawTexturePro(spriteSheets[spriteSheetName], source, e.rect, Vector2.Zero, 0, Color.WHITE);
 
