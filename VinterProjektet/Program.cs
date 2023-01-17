@@ -18,7 +18,7 @@ while(!Raylib.WindowShouldClose())
     Raylib.ClearBackground(Color.WHITE);
     Map.Draw();
     p.Draw();
-    e.Draw();
+    //e.Draw();
 
 
     Raylib.EndDrawing();

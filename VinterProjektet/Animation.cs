@@ -49,7 +49,7 @@ public class Animation
 
         source = new Rectangle(((frame[frameIndex] % 12) * frameSize) + border, (row * frameSize) + border, frameSize - (border * 2), frameSize - (border*2));
 
-        Raylib.DrawTexturePro(spriteSheets[spriteSheetName], source, e.rect, Vector2.Zero, 0, Color.WHITE);
+        Raylib.DrawTexturePro(spriteSheets[spriteSheetName], source, e.animRect, Vector2.Zero, 0, Color.WHITE);
 
         timerCurrentValue -= Raylib.GetFrameTime();
         if (timerCurrentValue < 0)

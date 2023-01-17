@@ -1,10 +1,7 @@
 public class Player : Entety
 {
-    //POSITION
-    //BILD
-    //MOVEMENT
-    
     //Animations
+    private int frameSize = 32;
     private int[] aDownStop = {1};
     private int[] aDown = {0,1,2,1};
     private int[] aLeftStop = {13};
@@ -19,31 +16,35 @@ public class Player : Entety
     private int[] aUpAttack = {39,40,41};
 
     //Timer
-    //private float timerMaxValue;
-    //private float timerCurrentValue;
     private float timer;
+
+
     
     public Player()
     {
-        //Set Player and Animation Speed
+        //Set Player stats
         Speed = 5f;
-        animSpeed = 0.12f;
+        Str = 1;
 
+        //Set player rectangles to keep track of position, collistion and attacking
+        animRect = new Rectangle(480, 480, 32*scale, 32*scale);
+        attackBox = new Rectangle(animRect.x+24, animRect.y+24, 32*scale, 32*scale);
+        hitBox = new Rectangle(animRect.x+30,animRect.y+12,12*scale,16*scale);
         
 
         //Load player Animations
-        animations.Add("aDownStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aDownStop, 12, animSpeed, false));
-        animations.Add("aDown", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aDown, 12, animSpeed, false));
-        animations.Add("aLeftStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aLeftStop, 12, animSpeed, false));
-        animations.Add("aLeft", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aLeft, 12, animSpeed, false));
-        animations.Add("aRightStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aRightStop, 12, animSpeed, false));
-        animations.Add("aRight", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aRight, 12, animSpeed, false));
-        animations.Add("aUpStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aUpStop, 12, animSpeed, false));
-        animations.Add("aUp", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aUp, 12, animSpeed, false));
-        animations.Add("aDownAttack", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aDownAttack, 12, animSpeed, false));
-        animations.Add("aLeftAttack", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aLeftAttack, 12, animSpeed, false));
-        animations.Add("aRightAttack", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aRightAttack, 12, animSpeed, false));
-        animations.Add("aUpAttack", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", 32, aUpAttack, 12, animSpeed, false));
+        animations.Add("aDownStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", frameSize, aDownStop, 12, animSpeed, false));
+        animations.Add("aDown", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", frameSize, aDown, 12, animSpeed, false));
+        animations.Add("aLeftStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", frameSize, aLeftStop, 12, animSpeed, false));
+        animations.Add("aLeft", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", frameSize, aLeft, 12, animSpeed, false));
+        animations.Add("aRightStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", frameSize, aRightStop, 12, animSpeed, false));
+        animations.Add("aRight", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", frameSize, aRight, 12, animSpeed, false));
+        animations.Add("aUpStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", frameSize, aUpStop, 12, animSpeed, false));
+        animations.Add("aUp", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", frameSize, aUp, 12, animSpeed, false));
+        animations.Add("aDownAttack", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", frameSize, aDownAttack, 12, animSpeed/2, false));
+        animations.Add("aLeftAttack", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", frameSize, aLeftAttack, 12, animSpeed/2, false));
+        animations.Add("aRightAttack", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", frameSize, aRightAttack, 12, animSpeed/2, false));
+        animations.Add("aUpAttack", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", frameSize, aUpAttack, 12, animSpeed/2, false));
 
         //Set Next Animation
         animations["aDown"].next = animations["aDownStop"];
@@ -57,30 +58,37 @@ public class Player : Entety
 
         //Set Starting Animation
         currentAnimation = animations["aDownStop"];
-
-        //Set player rectangle to keep track of position and collision
-        rect = new Rectangle(480, 480, 32*3, 32*3);
     }
 
     //Every frame
     public void Update()
     {
+        //Update timer
         if (timer > 0) {timer -= Raylib.GetFrameTime(); return;}
+        
         //Reset Vector2
         movement = Vector2.Zero;
 
-        //Controlls
+    //**Controlls**
+        //Attack controlls and method
         if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT))
         {
+            //Change current animation to an attack animation
+            if (animIndex.Contains("Stop")) animIndex = animIndex.Substring(0,animIndex.LastIndexOf("Stop"));
+            currentAnimation = animations[animIndex+"Attack"];
+            timer = animSpeed*1.5f;
             Attack();
+            //Return to stop moving when attacking
             return;
         }
+
+        //Movement controlls
         if (Raylib.IsKeyDown(KeyboardKey.KEY_S) || Raylib.IsKeyDown(KeyboardKey.KEY_DOWN)) {movement.Y = 1; animIndex = "aDown"; isMoving = true;}
         if (Raylib.IsKeyDown(KeyboardKey.KEY_A) || Raylib.IsKeyDown(KeyboardKey.KEY_LEFT)) {movement.X = -1; animIndex = "aLeft"; isMoving = true;}
         if (Raylib.IsKeyDown(KeyboardKey.KEY_D) || Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT)) {movement.X = 1; animIndex = "aRight"; isMoving = true;}
         if (Raylib.IsKeyDown(KeyboardKey.KEY_W) || Raylib.IsKeyDown(KeyboardKey.KEY_UP)) {movement.Y = -1; animIndex = "aUp"; isMoving = true;}
 
-        //Normalize Vector2 if not 0. 0 breaks the code.
+        //Normalize Vector2 if not 0 which would break the code.
         if (movement.Length() > 0)
         {
             movement = Vector2.Normalize(movement) * Speed;
@@ -88,29 +96,30 @@ public class Player : Entety
 
         //Add Vector2 to Player position
         //If new position is outside the playable area, push the Player back in
-        rect.x += movement.X;
-        if (!Raylib.CheckCollisionRecs(rect, Map.Col)) rect.x -= movement.X;
-        rect.y += movement.Y;
-        if (!Raylib.CheckCollisionRecs(rect, Map.Col)) rect.y -= movement.Y;
-        
+        animRect.x += movement.X;
+        if (!Raylib.CheckCollisionRecs(animRect, Map.Col)) animRect.x -= movement.X;
+        animRect.y += movement.Y;
+        if (!Raylib.CheckCollisionRecs(animRect, Map.Col)) animRect.y -= movement.Y;
         //Change animation state
         if (isMoving) currentAnimation = animations[animIndex];
         else if (!isMoving && (animIndex == "aDown" || animIndex == "aLeft" || animIndex == "aRight" || animIndex == "aUp")) 
             {currentAnimation = currentAnimation.next;}
         isMoving = false;
+
+        hitBox.x = animRect.x+30;
+        hitBox.y = animRect.y+12;
     }
 
+    //Deal damage to enemies within range of attack
     public void Attack()
     {
-        if (animIndex.Contains("Stop")) animIndex = animIndex.Substring(0,animIndex.LastIndexOf("Stop"));
-        currentAnimation = animations[animIndex+"Attack"];
-        timer = animSpeed*3;
+        
     }
 
     //Draw to screen
     public void Draw()
     {
-        //Raylib.DrawRectangleRec(rect, Color.DARKBLUE);
+        Raylib.DrawRectangleRec(hitBox, Color.DARKBLUE);
         currentAnimation.Draw(this);
         
     }

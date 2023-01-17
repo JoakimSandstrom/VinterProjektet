@@ -34,7 +34,7 @@ public class Enemy: Entety
         currentAnimation = animations[animIndex];
 
         //Set Enemy rectangle to keep track of position and collision
-        rect = new Rectangle(300, 300, 48, 48);
+        animRect = new Rectangle(300, 300, 48, 48);
     }
     
     //This controlls the AI
@@ -44,10 +44,10 @@ public class Enemy: Entety
         movement = Vector2.Zero;
 
         //Get the relative position of the player
-        movement.X = (p.rect.x + 24) - rect.x;
-        movement.Y = (p.rect.y + 24) - rect.y;
+        movement.X = (p.animRect.x + 24) - animRect.x;
+        movement.Y = (p.animRect.y + 24) - animRect.y;
 
-        if ((((p.rect.x + 24) - rect.x) <= 6 && ((p.rect.x + 24) - rect.x) >= -6 ) && ((p.rect.y + 24) - rect.y) <= 6 && ((p.rect.y + 24) - rect.y) >= -6) return;
+        if ((((p.animRect.x + 24) - animRect.x) <= 6 && ((p.animRect.x + 24) - animRect.x) >= -6 ) && ((p.animRect.y + 24) - animRect.y) <= 6 && ((p.animRect.y + 24) - animRect.y) >= -6) return;
 
         //Normalize Vector2 if not 0. 0 breaks the code.
         if (movement.Length() > 0)
@@ -56,8 +56,8 @@ public class Enemy: Entety
         }
 
         //Add Vector2 to Enemy position
-        rect.x += movement.X;
-        rect.y += movement.Y;
+        animRect.x += movement.X;
+        animRect.y += movement.Y;
     }
 
     //Draw to screen
