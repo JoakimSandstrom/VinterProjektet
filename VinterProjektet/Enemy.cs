@@ -14,11 +14,18 @@ public class Enemy: Entety
     private int[] aUpStop = {37};
     private int[] aUp = {36,37,38,37};
 
+
+
     public Enemy()
     {
         //Set Enemy and Animation Speed
         Speed = 3f;
         animSpeed = 0.12f;
+        InvFrame = 2f;
+
+        //Set Enemy rectangle to keep track of position and collision
+        animRect = new Rectangle(300, 300, 48, 48);
+        hitBox = new Rectangle(animRect.x,animRect.y,48,48);
 
         //Load player Animations
         animations.Add("aDownStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aDownStop, 12, animSpeed, true));
@@ -32,14 +39,14 @@ public class Enemy: Entety
 
         //Set Starting Animation
         currentAnimation = animations[animIndex];
-
-        //Set Enemy rectangle to keep track of position and collision
-        animRect = new Rectangle(300, 300, 48, 48);
     }
     
     //This controlls the AI
     public void Update(Player p)
     {
+        //Keep track of InvFrames
+        if (InvFrame > 0) InvFrame -= Raylib.GetFrameTime();
+
         //Reset Vector2
         movement = Vector2.Zero;
 
@@ -58,12 +65,24 @@ public class Enemy: Entety
         //Add Vector2 to Enemy position
         animRect.x += movement.X;
         animRect.y += movement.Y;
+        hitBox.x += movement.X;
+        hitBox.y += movement.Y;
+    }
+
+    public void GetHit(int damage)
+    {
+        if (InvFrame <= 0)
+        {
+            Health -= damage;
+            InvFrame = 2f;
+            Console.WriteLine("AAAHHHHHH");
+        }
     }
 
     //Draw to screen
     public void Draw()
     {
-        //Raylib.DrawRectangleRec(rect, Color.DARKGREEN);
+        Raylib.DrawRectangleRec(hitBox, Color.DARKGREEN);
         currentAnimation.Draw(this);
     }
 }

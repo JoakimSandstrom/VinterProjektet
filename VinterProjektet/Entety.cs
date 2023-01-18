@@ -16,6 +16,7 @@ public class Entety
     public float Speed {get; protected set;}
     public int Health {get; protected set;}
     public int Str {get; protected set;}
+    public float InvFrame {get; protected set;}
 
     //Animation dictionary and variables
     protected Dictionary<string, Animation> animations = new();

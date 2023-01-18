@@ -15,10 +15,9 @@ public class Player : Entety
     private int[] aRightAttack = {27,28,29};
     private int[] aUpAttack = {39,40,41};
 
-    //Timer
-    private float timer;
-
-
+    //Timer / attack Cool Down
+    private float attackCD;
+    public bool IsAttacking {get;private set;} = false;
     
     public Player()
     {
@@ -28,9 +27,8 @@ public class Player : Entety
 
         //Set player rectangles to keep track of position, collistion and attacking
         animRect = new Rectangle(480, 480, 32*scale, 32*scale);
-        attackBox = new Rectangle(animRect.x+24, animRect.y+24, 32*scale, 32*scale);
+        attackBox = new Rectangle(animRect.x+24, animRect.y+24, 20*scale, 20*scale);
         hitBox = new Rectangle(animRect.x+30,animRect.y+12,12*scale,16*scale);
-        
 
         //Load player Animations
         animations.Add("aDownStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_character_0.png", frameSize, aDownStop, 12, animSpeed, false));
@@ -61,11 +59,17 @@ public class Player : Entety
     }
 
     //Every frame
-    public void Update()
+    public void Update(Enemy e)
     {
         //Update timer
-        if (timer > 0) {timer -= Raylib.GetFrameTime(); return;}
-        
+        if (attackCD > 0)
+        {
+            attackCD -= Raylib.GetFrameTime();
+            IsAttacking = true;
+            return;
+        }
+        IsAttacking = false;
+
         //Reset Vector2
         movement = Vector2.Zero;
 
@@ -75,9 +79,10 @@ public class Player : Entety
         {
             //Change current animation to an attack animation
             if (animIndex.Contains("Stop")) animIndex = animIndex.Substring(0,animIndex.LastIndexOf("Stop"));
-            currentAnimation = animations[animIndex+"Attack"];
-            timer = animSpeed*1.5f;
-            Attack();
+            if (!animIndex.Contains("Attack")) animIndex += "Attack";
+            currentAnimation = animations[animIndex];
+            attackCD = animSpeed*1.5f;
+            Attack(e);
             //Return to stop moving when attacking
             return;
         }
@@ -97,29 +102,59 @@ public class Player : Entety
         //Add Vector2 to Player position
         //If new position is outside the playable area, push the Player back in
         animRect.x += movement.X;
-        if (!Raylib.CheckCollisionRecs(animRect, Map.Col)) animRect.x -= movement.X;
+        hitBox.x += movement.X;
+        if (!Raylib.CheckCollisionRecs(animRect, Map.Col)) {animRect.x -= movement.X; hitBox.x += movement.X;}
         animRect.y += movement.Y;
-        if (!Raylib.CheckCollisionRecs(animRect, Map.Col)) animRect.y -= movement.Y;
+        hitBox.y += movement.Y;
+        if (!Raylib.CheckCollisionRecs(animRect, Map.Col)) {animRect.y -= movement.Y; hitBox.y -= movement.Y;}
+
         //Change animation state
         if (isMoving) currentAnimation = animations[animIndex];
-        else if (!isMoving && (animIndex == "aDown" || animIndex == "aLeft" || animIndex == "aRight" || animIndex == "aUp")) 
+        else if (!isMoving) // && (animIndex == "aDown" || animIndex == "aLeft" || animIndex == "aRight" || animIndex == "aUp")
             {currentAnimation = currentAnimation.next;}
         isMoving = false;
-
-        hitBox.x = animRect.x+30;
-        hitBox.y = animRect.y+12;
     }
 
     //Deal damage to enemies within range of attack
-    public void Attack()
+    public void Attack(Enemy e)
     {
-        
+        switch (animIndex)
+        {
+            case "aDownAttack":
+                attackBox.x = animRect.x + 18;
+                attackBox.y = animRect.y + 48;
+                attackBox.height = 16*scale;
+                attackBox.width = 23*scale;
+                break;
+            case "aLeftAttack":
+                attackBox.x = animRect.x;
+                attackBox.y = animRect.y + 18;
+                attackBox.height = 23*scale;
+                attackBox.width = 16*scale;
+                break;
+            case "aRightAttack":
+                attackBox.x = animRect.x + 48;
+                attackBox.y = animRect.y + 18;
+                attackBox.height = 23*scale;
+                attackBox.width = 16*scale;
+                break;
+            case "aUpAttack":
+                attackBox.x = animRect.x + 9;
+                attackBox.y = animRect.y;
+                attackBox.height = 16*scale;
+                attackBox.width = 23*scale;
+                break;
+        }
+        if (Raylib.CheckCollisionRecs(attackBox,e.hitBox))
+        {
+            e.GetHit(1);
+        }
     }
 
     //Draw to screen
     public void Draw()
     {
-        Raylib.DrawRectangleRec(hitBox, Color.DARKBLUE);
+        Raylib.DrawRectangleRec(attackBox, Color.DARKBLUE);
         currentAnimation.Draw(this);
         
     }
