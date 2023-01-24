@@ -17,6 +17,7 @@ public class Entety
     public int Health {get; protected set;}
     public int Str {get; protected set;}
     public float InvFrame {get; protected set;}
+    public bool Dead {get; set;} = false;
 
     //Animation dictionary and variables
     protected Dictionary<string, Animation> animations = new();
@@ -24,5 +25,6 @@ public class Entety
     protected string animIndex = "aDownStop";
     protected bool isMoving = false;
     protected float animSpeed = 0.12f;
+    public bool changedAnim = false;
 }
 

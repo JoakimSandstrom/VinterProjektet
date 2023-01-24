@@ -44,13 +44,7 @@ public class Animation
     //Draw the current frame of the animation
     public void Draw(Entety e)
     {
-        if(frame[frameIndex] != 0) row = frame[frameIndex] / columnWidth;
-        else row = 0;
-
-        source = new Rectangle(((frame[frameIndex] % 12) * frameSize) + border, (row * frameSize) + border, frameSize - (border * 2), frameSize - (border*2));
-
-        Raylib.DrawTexturePro(spriteSheets[spriteSheetName], source, e.animRect, Vector2.Zero, 0, Color.WHITE);
-
+        //if (changedAnim) timerCurrentValue = 0;
         timerCurrentValue -= Raylib.GetFrameTime();
         if (timerCurrentValue < 0)
         {
@@ -59,5 +53,14 @@ public class Animation
             if (frameIndex == frame.Count - 1) frameIndex = 0;
             else frameIndex++;
         }
+        source.x = ((frame[frameIndex] % columnWidth) * frameSize) + border;
+        source.y = (row * frameSize) + border;
+        source.width = frameSize - (border * 2);
+        source.height = frameSize - (border * 2);
+
+        if(frame[frameIndex] != 0) row = frame[frameIndex] / columnWidth;
+        else row = 0;
+
+        Raylib.DrawTexturePro(spriteSheets[spriteSheetName], source, e.animRect, Vector2.Zero, 0, Color.WHITE);
     }
 }

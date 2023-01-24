@@ -1,9 +1,5 @@
 public class Enemy: Entety
 {
-    //POSITION
-    //BILD
-    //MOVEMENT
-    
     //Animations
     private int[] aDownStop = {1};
     private int[] aDown = {0,1,2,1};
@@ -14,14 +10,13 @@ public class Enemy: Entety
     private int[] aUpStop = {37};
     private int[] aUp = {36,37,38,37};
 
-
-
     public Enemy()
     {
-        //Set Enemy and Animation Speed
+        //Set Stats
         Speed = 3f;
-        animSpeed = 0.12f;
-        InvFrame = 2f;
+        InvFrame = 0.5f;
+        Str = 1;
+        Health = 3;
 
         //Set Enemy rectangle to keep track of position and collision
         animRect = new Rectangle(300, 300, 48, 48);
@@ -44,6 +39,7 @@ public class Enemy: Entety
     //This controlls the AI
     public void Update(Player p)
     {
+        if (Dead) return;
         //Keep track of InvFrames
         if (InvFrame > 0) InvFrame -= Raylib.GetFrameTime();
 
@@ -74,14 +70,16 @@ public class Enemy: Entety
         if (InvFrame <= 0)
         {
             Health -= damage;
-            InvFrame = 2f;
-            Console.WriteLine("AAAHHHHHH");
+            InvFrame = 0.5f;
+            Console.WriteLine(Health);
         }
+        if (Health <= 0) Dead = true;
     }
 
     //Draw to screen
     public void Draw()
     {
+        if (Dead) return;
         Raylib.DrawRectangleRec(hitBox, Color.DARKGREEN);
         currentAnimation.Draw(this);
     }

@@ -19,6 +19,11 @@ public class Player : Entety
     private float attackCD;
     public bool IsAttacking {get;private set;} = false;
     
+    private bool colliding = false;
+    private Vector2 collPoint1;
+    private Vector2 collPoint2;
+    private Vector2 collPoint3;
+
     public Player()
     {
         //Set Player stats
@@ -103,15 +108,14 @@ public class Player : Entety
         //If new position is outside the playable area, push the Player back in
         animRect.x += movement.X;
         hitBox.x += movement.X;
-        if (!Raylib.CheckCollisionRecs(animRect, Map.Col)) {animRect.x -= movement.X; hitBox.x += movement.X;}
+        CheckCollision("x");
         animRect.y += movement.Y;
         hitBox.y += movement.Y;
-        if (!Raylib.CheckCollisionRecs(animRect, Map.Col)) {animRect.y -= movement.Y; hitBox.y -= movement.Y;}
+        CheckCollision("y");
 
         //Change animation state
         if (isMoving) currentAnimation = animations[animIndex];
-        else if (!isMoving) // && (animIndex == "aDown" || animIndex == "aLeft" || animIndex == "aRight" || animIndex == "aUp")
-            {currentAnimation = currentAnimation.next;}
+        else if (!isMoving) currentAnimation = currentAnimation.next;
         isMoving = false;
     }
 
@@ -147,15 +151,40 @@ public class Player : Entety
         }
         if (Raylib.CheckCollisionRecs(attackBox,e.hitBox))
         {
-            e.GetHit(1);
+            e.GetHit(Str);
+        }
+    }
+
+    private void CheckCollision(string s)
+    {
+        collPoint1.X = hitBox.x;
+        collPoint1.Y = hitBox.y+hitBox.height;
+        collPoint2.X = hitBox.x+hitBox.width;
+        collPoint2.Y = hitBox.y+hitBox.height;
+        collPoint3.X = hitBox.x+(hitBox.width/2);
+        collPoint3.Y = hitBox.y+(hitBox.height*0.75f);
+        foreach (Rectangle r in Map.collision)
+        {
+            if (Raylib.CheckCollisionPointRec(collPoint1, r) || Raylib.CheckCollisionPointRec(collPoint2, r) || Raylib.CheckCollisionPointRec(collPoint3, r))
+            {
+                if (s == "x") 
+                {
+                    animRect.x -= movement.X;
+                    hitBox.x -= movement.X;
+                }
+                else if (s == "y")
+                {
+                    animRect.y -= movement.Y;
+                    hitBox.y -= movement.Y;
+                }
+            }
         }
     }
 
     //Draw to screen
     public void Draw()
     {
-        Raylib.DrawRectangleRec(attackBox, Color.DARKBLUE);
+        //Raylib.DrawRectangleRec(hitBox, Color.DARKBLUE);
         currentAnimation.Draw(this);
-        
     }
 }
