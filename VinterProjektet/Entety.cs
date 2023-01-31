@@ -16,7 +16,7 @@ public class Entety
     public float Speed {get; protected set;}
     public int Health {get; protected set;}
     public int Str {get; protected set;}
-    public float InvFrame {get; protected set;}
+    public float InvFrame {get; protected set;} = 0.5f;
     public bool Dead {get; set;} = false;
 
     //Animation dictionary and variables
@@ -26,5 +26,17 @@ public class Entety
     protected bool isMoving = false;
     protected float animSpeed = 0.12f;
     public bool changedAnim = false;
+    protected int frameSize;
+
+    public void GetHit(int damage)
+    {
+        if (InvFrame <= 0)
+        {
+            Health -= damage;
+            InvFrame = 0.5f;
+            Console.WriteLine(name+Health);
+        }
+        if (Health <= 0) Dead = true;
+    }
 }
 

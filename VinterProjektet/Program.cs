@@ -22,6 +22,5 @@ while(!Raylib.WindowShouldClose())
     p.Draw();
     e.Draw();
 
-
     Raylib.EndDrawing();
 }

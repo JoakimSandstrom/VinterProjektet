@@ -1,7 +1,6 @@
 public class Player : Entety
 {
     //Animations
-    private int frameSize = 32;
     private int[] aDownStop = {1};
     private int[] aDown = {0,1,2,1};
     private int[] aLeftStop = {13};
@@ -27,8 +26,10 @@ public class Player : Entety
     public Player()
     {
         //Set Player stats
+        name = "player";
         Speed = 5f;
         Str = 1;
+        frameSize = 32;
 
         //Set player rectangles to keep track of position, collistion and attacking
         animRect = new Rectangle(480, 480, 32*scale, 32*scale);
@@ -66,6 +67,9 @@ public class Player : Entety
     //Every frame
     public void Update(Enemy e)
     {
+        //Keep track of InvFrames
+        if (InvFrame > 0) InvFrame -= Raylib.GetFrameTime();
+
         //Update timer
         if (attackCD > 0)
         {
@@ -113,7 +117,7 @@ public class Player : Entety
         hitBox.y += movement.Y;
         CheckCollision("y");
 
-        //Change animation state
+        //Change Animation State
         if (isMoving) currentAnimation = animations[animIndex];
         else if (!isMoving) currentAnimation = currentAnimation.next;
         isMoving = false;

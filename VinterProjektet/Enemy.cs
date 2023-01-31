@@ -10,77 +10,117 @@ public class Enemy: Entety
     private int[] aUpStop = {37};
     private int[] aUp = {36,37,38,37};
 
+    private float distance = 0;
+    private float timer = 0.48f;
+
     public Enemy()
     {
         //Set Stats
+        name = "Enemy";
         Speed = 3f;
-        InvFrame = 0.5f;
         Str = 1;
         Health = 3;
+        frameSize = 48;
 
         //Set Enemy rectangle to keep track of position and collision
         animRect = new Rectangle(300, 300, 48, 48);
         hitBox = new Rectangle(animRect.x,animRect.y,48,48);
 
         //Load player Animations
-        animations.Add("aDownStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aDownStop, 12, animSpeed, true));
-        animations.Add("aDown", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aDown, 12, animSpeed, true));
-        animations.Add("aLeftStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aLeftStop, 12, animSpeed, true));
-        animations.Add("aLeft", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aLeft, 12, animSpeed, true));
-        animations.Add("aRightStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aRightStop, 12, animSpeed, true));
-        animations.Add("aRight", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aRight, 12, animSpeed, true));
-        animations.Add("aUpStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aUpStop, 12, animSpeed, true));
-        animations.Add("aUp", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", 48, aUp, 12, animSpeed, true));
+        animations.Add("aDownStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", frameSize, aDownStop, 12, animSpeed, true));
+        animations.Add("aDown", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", frameSize, aDown, 12, animSpeed, true));
+        animations.Add("aLeftStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", frameSize, aLeftStop, 12, animSpeed, true));
+        animations.Add("aLeft", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", frameSize, aLeft, 12, animSpeed, true));
+        animations.Add("aRightStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", frameSize, aRightStop, 12, animSpeed, true));
+        animations.Add("aRight", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", frameSize, aRight, 12, animSpeed, true));
+        animations.Add("aUpStop", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", frameSize, aUpStop, 12, animSpeed, true));
+        animations.Add("aUp", new Animation("Sprites/dungeon-pack-free_version/sprite/free_monsters_0.png", frameSize, aUp, 12, animSpeed, true));
+
+        //Set Next Animation
+        animations["aDown"].next = animations["aDownStop"];
+        animations["aLeft"].next = animations["aLeftStop"];
+        animations["aRight"].next = animations["aRightStop"];
+        animations["aUp"].next = animations["aUpStop"];
 
         //Set Starting Animation
-        currentAnimation = animations[animIndex];
+        currentAnimation = animations["aDownStop"];
     }
     
     //This controlls the AI
     public void Update(Player p)
     {
+        //If enemy is dead, don't continue
         if (Dead) return;
+        
         //Keep track of InvFrames
         if (InvFrame > 0) InvFrame -= Raylib.GetFrameTime();
 
-        //Reset Vector2
-        movement = Vector2.Zero;
-
-        //Get the relative position of the player
-        movement.X = (p.animRect.x + 24) - animRect.x;
-        movement.Y = (p.animRect.y + 24) - animRect.y;
-
-        if ((((p.animRect.x + 24) - animRect.x) <= 6 && ((p.animRect.x + 24) - animRect.x) >= -6 ) && ((p.animRect.y + 24) - animRect.y) <= 6 && ((p.animRect.y + 24) - animRect.y) >= -6) return;
-
-        //Normalize Vector2 if not 0. 0 breaks the code.
-        if (movement.Length() > 0)
+        //Hit Player
+        if (Raylib.CheckCollisionRecs(hitBox,p.hitBox))
         {
-            movement = Vector2.Normalize(movement) * Speed;
+            p.GetHit(Str);
         }
 
-        //Add Vector2 to Enemy position
-        animRect.x += movement.X;
-        animRect.y += movement.Y;
-        hitBox.x += movement.X;
-        hitBox.y += movement.Y;
-    }
-
-    public void GetHit(int damage)
-    {
-        if (InvFrame <= 0)
+        //Calculate direction to move
+        if (distance <= -48f)
         {
-            Health -= damage;
-            InvFrame = 0.5f;
-            Console.WriteLine(Health);
+            //Reset Vector2
+            movement = Vector2.Zero;
+
+            //Get the relative position of the player
+            movement.X = (p.animRect.x + 24) - animRect.x;
+            movement.Y = (p.animRect.y + 24) - animRect.y;
+
+            //If on player then don't proceed
+            if ((((p.animRect.x + 24) - animRect.x) <= 6 && ((p.animRect.x + 24) - animRect.x) >= -6 ) && ((p.animRect.y + 24) - animRect.y) <= 6 && ((p.animRect.y + 24) - animRect.y) >= -6) return;
+
+            //Normalize Vector2 if not 0. 0 breaks the code.
+            //Probably don't need this
+            if (movement.Length() > 0)
+            {
+                movement = Vector2.Normalize(movement);
+            }
+
+            if (movement.X >= 0 && Math.Abs(movement.X) >= Math.Abs(movement.Y)) {movement.X = Speed; movement.Y = 0; animIndex = "aRight";}
+            else if (movement.X <= 0 && Math.Abs(movement.X) >= Math.Abs(movement.Y)) {movement.X = -Speed; movement.Y = 0; animIndex = "aLeft";}
+            else if (movement.Y >= 0 && Math.Abs(movement.Y) >= Math.Abs(movement.X)) {movement.X = 0; movement.Y = Speed; animIndex = "aDown";}
+            else if (movement.Y <= 0 && Math.Abs(movement.Y) >= Math.Abs(movement.X)) {movement.X = 0; movement.Y = -Speed; animIndex = "aUp";}
+            else Console.WriteLine("Error!!!");
+
+            //Change Animation State
+            currentAnimation = animations[animIndex];
+
+            //Reset distance
+            distance = 48f;
+            timer = 0.48f;
         }
-        if (Health <= 0) Dead = true;
+
+        //Decrese distance left
+        distance -= Speed;
+        timer -= Raylib.GetFrameTime();
+        
+        //Move
+        if (timer > 0)
+        {
+            //Add Vector2 to Enemy position
+            animRect.x += movement.X;
+            animRect.y += movement.Y;
+            hitBox.x += movement.X;
+            hitBox.y += movement.Y;
+        }
+
+        //Stop Animation
+        if (timer < 0 && !animIndex.Contains("Stop"))
+        {
+            currentAnimation = currentAnimation.next;
+        }
     }
 
     //Draw to screen
     public void Draw()
     {
         if (Dead) return;
-        Raylib.DrawRectangleRec(hitBox, Color.DARKGREEN);
+        //Raylib.DrawRectangleRec(hitBox, Color.DARKGREEN);
         currentAnimation.Draw(this);
     }
 }
