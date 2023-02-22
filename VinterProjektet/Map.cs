@@ -5,8 +5,11 @@ public class Map
 
     //Load texture to memory
     private Texture2D tx = Raylib.LoadTexture("Sprites/Map.png");
+
+    //List of collision rectangles
     public static List<Rectangle> collision = new();
 
+    //Add collision rectangles
     public Map()
     {
         collision.Add(new Rectangle(0,0,tx.width*scale,144));
@@ -25,9 +28,9 @@ public class Map
     public void Draw()
     {
         Raylib.DrawTextureEx(tx, Vector2.Zero, 0, scale, Color.WHITE);
-        foreach (Rectangle r in collision)
-        {
-            //Raylib.DrawRectangleRec(r, Color.DARKBLUE);
-        }
+        //foreach (Rectangle r in collision)
+        //{
+        //    Raylib.DrawRectangleRec(r, Color.DARKBLUE);
+        //}
     }
 }

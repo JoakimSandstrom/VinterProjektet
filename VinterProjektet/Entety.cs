@@ -28,6 +28,7 @@ public class Entety
     public bool changedAnim = false;
     protected int frameSize;
 
+    //Get hit if no invinsibility frames
     public void GetHit(int damage)
     {
         if (InvFrame <= 0)

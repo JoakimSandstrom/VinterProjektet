@@ -5,22 +5,33 @@ Raylib.InitWindow(960, 960, "Världens sämsta spel");
 Raylib.SetTargetFPS(60);
 
 Map map = new Map();
-
+Controller controller = new Controller();
 Player p = new Player();
-Enemy e = new Enemy();
+
+//Creates a list of enemies and adds one to start
+List<Enemy> enemies = new List<Enemy>();
+enemies.Add(new Enemy(200,200));
 
 while(!Raylib.WindowShouldClose())
 {
     //LOGIK
-    p.Update(e);
-    e.Update(p);
-    
+    //Uppdate Controller, Player and Enemies
+    controller.GameTime(enemies);
+    p.Update(enemies);
+    foreach (Enemy e in enemies)
+    {
+        e.Update(p);
+    }
+
     //GRAFIK
+    //Draw Map, Player and Enemies
     Raylib.BeginDrawing();
     Raylib.ClearBackground(Color.WHITE);
     map.Draw();
     p.Draw();
-    e.Draw();
-
+    foreach (Enemy e in enemies)
+    {
+        e.Draw();
+    }
     Raylib.EndDrawing();
 }

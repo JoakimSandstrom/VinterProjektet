@@ -13,17 +13,17 @@ public class Enemy: Entety
     private float distance = 0;
     private float timer = 0.48f;
 
-    public Enemy()
+    public Enemy(float x, float y)
     {
         //Set Stats
         name = "Enemy";
-        Speed = 3f;
+        Speed = 2f;
         Str = 1;
         Health = 3;
         frameSize = 48;
 
         //Set Enemy rectangle to keep track of position and collision
-        animRect = new Rectangle(300, 300, 48, 48);
+        animRect = new Rectangle(x, y, 48, 48);
         hitBox = new Rectangle(animRect.x,animRect.y,48,48);
 
         //Load player Animations
@@ -74,13 +74,7 @@ public class Enemy: Entety
             //If on player then don't proceed
             if ((((p.animRect.x + 24) - animRect.x) <= 6 && ((p.animRect.x + 24) - animRect.x) >= -6 ) && ((p.animRect.y + 24) - animRect.y) <= 6 && ((p.animRect.y + 24) - animRect.y) >= -6) return;
 
-            //Normalize Vector2 if not 0. 0 breaks the code.
-            //Probably don't need this
-            if (movement.Length() > 0)
-            {
-                movement = Vector2.Normalize(movement);
-            }
-
+            //Check directions and set speed and animation
             if (movement.X >= 0 && Math.Abs(movement.X) >= Math.Abs(movement.Y)) {movement.X = Speed; movement.Y = 0; animIndex = "aRight";}
             else if (movement.X <= 0 && Math.Abs(movement.X) >= Math.Abs(movement.Y)) {movement.X = -Speed; movement.Y = 0; animIndex = "aLeft";}
             else if (movement.Y >= 0 && Math.Abs(movement.Y) >= Math.Abs(movement.X)) {movement.X = 0; movement.Y = Speed; animIndex = "aDown";}
@@ -95,7 +89,7 @@ public class Enemy: Entety
             timer = 0.48f;
         }
 
-        //Decrese distance left
+        //Decrease distance and timer
         distance -= Speed;
         timer -= Raylib.GetFrameTime();
         
@@ -119,6 +113,7 @@ public class Enemy: Entety
     //Draw to screen
     public void Draw()
     {
+        //Don't draw if dead
         if (Dead) return;
         //Raylib.DrawRectangleRec(hitBox, Color.DARKGREEN);
         currentAnimation.Draw(this);

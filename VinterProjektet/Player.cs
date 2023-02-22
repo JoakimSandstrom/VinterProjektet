@@ -17,7 +17,8 @@ public class Player : Entety
     //Timer / attack Cool Down
     private float attackCD;
     public bool IsAttacking {get;private set;} = false;
-    
+
+    //Collision variables
     private bool colliding = false;
     private Vector2 collPoint1;
     private Vector2 collPoint2;
@@ -65,7 +66,7 @@ public class Player : Entety
     }
 
     //Every frame
-    public void Update(Enemy e)
+    public void Update(List<Enemy> enemies)
     {
         //Keep track of InvFrames
         if (InvFrame > 0) InvFrame -= Raylib.GetFrameTime();
@@ -91,7 +92,7 @@ public class Player : Entety
             if (!animIndex.Contains("Attack")) animIndex += "Attack";
             currentAnimation = animations[animIndex];
             attackCD = animSpeed*1.5f;
-            Attack(e);
+            Attack(enemies);
             //Return to stop moving when attacking
             return;
         }
@@ -123,8 +124,8 @@ public class Player : Entety
         isMoving = false;
     }
 
-    //Deal damage to enemies within range of attack
-    public void Attack(Enemy e)
+    //Move attack hitbox and deal damage
+    public void Attack(List<Enemy> enemies)
     {
         switch (animIndex)
         {
@@ -153,22 +154,32 @@ public class Player : Entety
                 attackBox.width = 23*scale;
                 break;
         }
-        if (Raylib.CheckCollisionRecs(attackBox,e.hitBox))
+
+        //Check if enemy is in range, if true do GetHit()
+        foreach (Enemy e in enemies)
         {
-            e.GetHit(Str);
+            if (Raylib.CheckCollisionRecs(attackBox,e.hitBox))
+            {
+                e.GetHit(Str);
+            }
         }
     }
 
+    //Checks and enforces collision
     private void CheckCollision(string s)
     {
+        //Set points
         collPoint1.X = hitBox.x;
         collPoint1.Y = hitBox.y+hitBox.height;
         collPoint2.X = hitBox.x+hitBox.width;
         collPoint2.Y = hitBox.y+hitBox.height;
         collPoint3.X = hitBox.x+(hitBox.width/2);
         collPoint3.Y = hitBox.y+(hitBox.height*0.75f);
+
+        //Check collision for every collision object
         foreach (Rectangle r in Map.collision)
         {
+            //if colliding, move back
             if (Raylib.CheckCollisionPointRec(collPoint1, r) || Raylib.CheckCollisionPointRec(collPoint2, r) || Raylib.CheckCollisionPointRec(collPoint3, r))
             {
                 if (s == "x") 
